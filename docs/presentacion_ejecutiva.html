@@ -163,11 +163,11 @@
     <!-- Diapositiva 3 -->
     <div class="slide-body" id="slide-3">
       <h2>3. Flujo de Conciliación y Reglas de Negocio</h2>
-      <p>El proceso automatizado ejecuta una secuencia estricta de validaciones:</p>
+      <p>El motor de conciliación ejecuta una secuencia estricta de validaciones tributarias y contables:</p>
       <table>
         <thead>
           <tr>
-            <th>Regla de Negocio</th>
+            <th>Regla Contable</th>
             <th>Fórmula / Criterio</th>
             <th>Impacto y Trazabilidad</th>
           </tr>
@@ -176,22 +176,27 @@
           <tr>
             <td><strong>IVA Esperado</strong></td>
             <td><code>Base Gravable × Tarifa IVA</code></td>
-            <td>Se detecta cualquier variación respecto al IVA reportado en el CSV.</td>
+            <td>Detecta discrepancias de facturación frente al cálculo legal exacto.</td>
           </tr>
           <tr>
-            <td><strong>Total Esperado</strong></td>
+            <td><strong>Retención y Total</strong></td>
             <td><code>Base + IVA esperado − Retención</code></td>
-            <td>Usa el <em>IVA esperado</em> para evitar arrastre de errores tributarios.</td>
+            <td>Usa el <em>IVA esperado</em> para evitar arrastre de inconsistencias en cascada.</td>
           </tr>
           <tr>
             <td><strong>Detección de Duplicados</strong></td>
-            <td>Aparición > 1 de <code>id_factura</code></td>
-            <td>Visibiliza todas las repeticiones sin exclusión silenciosa.</td>
+            <td>Frecuencia > 1 de <code>id_factura</code></td>
+            <td>Visibiliza todas las repeticiones sin exclusión silenciosa de filas.</td>
           </tr>
           <tr>
-            <td><strong>Registro Contable</strong></td>
-            <td>Cruce contra <code>contabilidad.csv</code></td>
-            <td>Identifica facturas sin asiento contable correspondiente.</td>
+            <td><strong>Cruce Contable y Débito</strong></td>
+            <td>Existencia y <code>valor_debito == total_factura</code></td>
+            <td>Identifica facturas sin asiento contable o con desfase en el débito.</td>
+          </tr>
+          <tr>
+            <td><strong>Estado de Contabilización</strong></td>
+            <td>Auditoría de <code>estado == "Pendiente"</code></td>
+            <td>Alerta sobre registros contables en trámite no asentados en firme.</td>
           </tr>
         </tbody>
       </table>
@@ -206,11 +211,11 @@
           <p><strong>Total Facturas Evaluadas</strong></p>
         </div>
         <div class="card center">
-          <div class="metric-badge badge-success">35 (70%)</div>
+          <div class="metric-badge badge-success">32 (64%)</div>
           <p><strong>Facturas Correctas</strong></p>
         </div>
         <div class="card center" style="grid-column: span 2;">
-          <div class="metric-badge badge-danger">15 (30%)</div>
+          <div class="metric-badge badge-danger">18 (36%)</div>
           <p><strong>Facturas con Inconsistencias Identificadas</strong></p>
         </div>
       </div>
@@ -225,8 +230,9 @@
         <tbody>
           <tr><td>Diferencia en IVA</td><td class="center">2</td><td>FAC-0006 ($215.000 vs $190.000 esperado), FAC-0018</td></tr>
           <tr><td>Diferencia en Total</td><td class="center">3</td><td>FAC-0009, FAC-0023, FAC-0036</td></tr>
-          <tr><td>Factura Duplicada</td><td class="center">4</td><td>FAC-0004 (2 filas), FAC-0015 (2 filas)</td></tr>
+          <tr><td>Factura Duplicada / Cruce Débito</td><td class="center">4</td><td>FAC-0004 (2 filas; $2.213.500 vs. débito $3.659.250), FAC-0015</td></tr>
           <tr><td>Sin Registro Contable</td><td class="center">4</td><td>FAC-0007, FAC-0021, FAC-0034, FAC-0042</td></tr>
+          <tr><td>Registro Contable "Pendiente"</td><td class="center">3</td><td>FAC-0011, FAC-0027, FAC-0039</td></tr>
           <tr><td>Campos Obligatorios Vacíos</td><td class="center">3</td><td>FAC-0013 (sin NIT), FAC-0029 (sin concepto), FAC-0042 (sin fecha)</td></tr>
         </tbody>
       </table>
@@ -239,18 +245,19 @@
         <div class="card">
           <h3>Impacto y Beneficios</h3>
           <ul>
-            <li><strong>Eficiencia Extrema:</strong> Conciliación completa en <strong>menos de 1 segundo</strong> frente a horas de revisión manual.</li>
+            <li><strong>Eficiencia Operativa:</strong> Conciliación completa en <strong>menos de 1 segundo</strong> frente a horas de revisión manual.</li>
             <li><strong>Cero Ambigüedad:</strong> Trazabilidad granular de las causas que impiden la contabilización.</li>
-            <li><strong>Precisión Financiera:</strong> Eliminación de riesgos de cálculo gracias al uso de tipos <code>Decimal</code>.</li>
-            <li><strong>Alta Confiabilidad:</strong> 24 pruebas unitarias y de integración automatizadas.</li>
+            <li><strong>Precisión Financiera:</strong> Eliminación de riesgos de redondeo mediante tipos estándar <code>Decimal</code>.</li>
+            <li><strong>Calidad y Cobertura:</strong> <strong>43 pruebas unitarias en backend</strong> y <strong>21 pruebas en frontend</strong> (100% éxito).</li>
           </ul>
         </div>
         <div class="card">
           <h3>Ruta de Evolución</h3>
           <ul>
-            <li><strong>Exportación:</strong> Descarga de informes en Excel y PDF con firmas de auditoría.</li>
-            <li><strong>Conciliación de Cuentas:</strong> Validación de centros de costo y cuentas de retención en la fuente (e.g., 2365).</li>
-            <li><strong>Histórico y Roles:</strong> Persistencia en base de datos relacional y perfiles de aprobación contable.</li>
+            <li><strong>Paginación en Servidor:</strong> Adaptación para procesamiento masivo (>50.000 facturas) con colas asíncronas.</li>
+            <li><strong>Persistencia Relacional:</strong> Almacenamiento histórico de lotes conciliados en PostgreSQL o SQL Server.</li>
+            <li><strong>Exportación:</strong> Descarga de informes de auditoría en Excel (.xlsx) y PDF formal.</li>
+            <li><strong>Seguridad:</strong> Autenticación corporativa mediante Single Sign-On (SSO) bancario.</li>
           </ul>
         </div>
       </div>
