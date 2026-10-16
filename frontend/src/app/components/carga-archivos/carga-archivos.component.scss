@@ -1,6 +1,6 @@
 @use 'variables' as *;
 
-.upload-section {
+.seccion-carga {
   @include card;
   padding: 2rem;
   margin-bottom: 2rem;
@@ -10,14 +10,14 @@
   }
 }
 
-.upload-grid {
+.cuadricula-carga {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
   margin-bottom: 1.5rem;
 }
 
-.upload-card {
+.tarjeta-carga {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -39,7 +39,7 @@
     background: $surface;
   }
 
-  .upload-icon {
+  .icono-carga {
     display: grid;
     place-items: center;
     width: 56px;
@@ -77,7 +77,7 @@
     display: none;
   }
 
-  .file-name {
+  .nombre-archivo {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
@@ -89,7 +89,7 @@
   }
 }
 
-.btn-select {
+.boton-seleccionar {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -118,18 +118,18 @@
   }
 }
 
-.process-section {
+.seccion-procesar {
   text-align: center;
   margin-top: 0.5rem;
 
-  .hint {
+  .pista {
     margin-top: 0.75rem;
     color: $muted;
     font-size: 0.85rem;
   }
 }
 
-.btn-process {
+.boton-procesar {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
@@ -162,7 +162,7 @@
   }
 }
 
-.spinner {
+.indicador-carga {
   width: 1rem;
   height: 1rem;
   border: 2px solid rgba($brand-black, 0.25);
@@ -177,14 +177,14 @@
   }
 }
 
-.loading-message {
+.mensaje-carga {
   margin-top: 1rem;
   text-align: center;
   color: $muted;
   font-weight: 600;
 }
 
-.error-message {
+.mensaje-error {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
@@ -203,15 +203,15 @@
 }
 
 @media (max-width: $breakpoint-mobile) {
-  .upload-section {
+  .seccion-carga {
     padding: 1.25rem;
   }
 
-  .upload-grid {
+  .cuadricula-carga {
     grid-template-columns: 1fr;
   }
 
-  .btn-process {
+  .boton-procesar {
     width: 100%;
     justify-content: center;
   }

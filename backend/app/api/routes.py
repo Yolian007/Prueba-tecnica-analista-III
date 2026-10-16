@@ -3,7 +3,7 @@
 from typing import Dict
 from fastapi import APIRouter, Depends, File, UploadFile, status
 
-from app.schemas.conciliacion import ErrorResponse, RespuestaConciliacion
+from app.schemas.conciliacion import RespuestaConciliacion, RespuestaError
 from app.services.servicio_conciliacion import (
     ServicioConciliacion,
     obtener_servicio_conciliacion,
@@ -14,7 +14,7 @@ router = enrutador
 
 
 @enrutador.get(
-    "/health",
+    "/salud",
     summary="Verificación del estado del servicio",
     description="Retorna el estado de disponibilidad y operatividad del servicio.",
     tags=["Salud"],
@@ -24,16 +24,22 @@ def verificar_salud() -> Dict[str, str]:
     return {"estado": "activo", "servicio": "Conciliador de Facturas"}
 
 
+@enrutador.get("/health", include_in_schema=False)
+def verificar_salud_alias() -> Dict[str, str]:
+    """Ruta alias en inglés para compatibilidad con sistemas de monitoreo estándar."""
+    return verificar_salud()
+
+
 @enrutador.post(
     "/api/conciliacion",
     response_model=RespuestaConciliacion,
     responses={
         status.HTTP_400_BAD_REQUEST: {
-            "model": ErrorResponse,
+            "model": RespuestaError,
             "description": "Error en archivos de entrada o estructura CSV inválida",
         },
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
-            "model": ErrorResponse,
+            "model": RespuestaError,
             "description": "Error interno durante la ejecución del proceso",
         },
     },

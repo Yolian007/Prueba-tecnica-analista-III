@@ -21,6 +21,6 @@ export class ConciliacionService {
   }
 
   verificarSalud(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/health`);
+    return this.http.get<any>(`${this.apiUrl}/salud`);
   }
 }

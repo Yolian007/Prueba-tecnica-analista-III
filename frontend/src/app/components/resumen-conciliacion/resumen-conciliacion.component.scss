@@ -1,6 +1,6 @@
 @use 'variables' as *;
 
-.summary-section {
+.seccion-resumen {
   margin-bottom: 2rem;
 
   h2 {
@@ -8,13 +8,13 @@
   }
 }
 
-.summary-grid {
+.cuadricula-resumen {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
 }
 
-.summary-card {
+.tarjeta-resumen {
   @include card;
   position: relative;
   padding: 1.5rem 1.75rem;
@@ -35,12 +35,12 @@
       background: $brand-yellow;
     }
 
-    .summary-label,
-    .summary-percent {
+    .etiqueta-resumen,
+    .porcentaje-resumen {
       color: rgba($surface, 0.75);
     }
 
-    .summary-number {
+    .numero-resumen {
       color: $brand-yellow;
     }
   }
@@ -50,7 +50,7 @@
       background: $success;
     }
 
-    .summary-number {
+    .numero-resumen {
       color: $success-strong;
     }
 
@@ -64,7 +64,7 @@
       background: $danger;
     }
 
-    .summary-number {
+    .numero-resumen {
       color: $danger;
     }
 
@@ -73,7 +73,7 @@
     }
   }
 
-  .summary-label {
+  .etiqueta-resumen {
     color: $muted;
     font-size: 0.85rem;
     font-weight: 700;
@@ -81,14 +81,14 @@
     text-transform: uppercase;
   }
 
-  .summary-number {
+  .numero-resumen {
     font-size: 2.75rem;
     font-weight: 800;
     line-height: 1.1;
     margin: 0.35rem 0 0.2rem;
   }
 
-  .summary-percent {
+  .porcentaje-resumen {
     color: $muted;
     font-size: 0.85rem;
   }
@@ -109,7 +109,7 @@
 }
 
 @media (max-width: $breakpoint-mobile) {
-  .summary-grid {
+  .cuadricula-resumen {
     grid-template-columns: 1fr;
     gap: 1rem;
   }

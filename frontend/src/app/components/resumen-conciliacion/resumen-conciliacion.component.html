@@ -1,21 +1,21 @@
-<section class="summary-section">
+<section class="seccion-resumen">
   <h2>Resumen de conciliación</h2>
-  <div class="summary-grid">
-    <div class="summary-card total">
-      <div class="summary-label">Total facturas</div>
-      <div class="summary-number">{{ resumen.total_facturas }}</div>
-      <div class="summary-percent">Registros analizados</div>
+  <div class="cuadricula-resumen">
+    <div class="tarjeta-resumen total">
+      <div class="etiqueta-resumen">Total facturas</div>
+      <div class="numero-resumen">{{ resumen.total_facturas }}</div>
+      <div class="porcentaje-resumen">Registros analizados</div>
     </div>
-    <div class="summary-card correctas">
-      <div class="summary-label">Correctas</div>
-      <div class="summary-number">{{ resumen.correctas }}</div>
-      <div class="summary-percent">{{ porcentaje(resumen.correctas) }} del total</div>
+    <div class="tarjeta-resumen correctas">
+      <div class="etiqueta-resumen">Correctas</div>
+      <div class="numero-resumen">{{ resumen.correctas }}</div>
+      <div class="porcentaje-resumen">{{ porcentaje(resumen.correctas) }} del total</div>
       <div class="barra" aria-hidden="true"><span [style.width]="porcentaje(resumen.correctas)"></span></div>
     </div>
-    <div class="summary-card inconsistencias">
-      <div class="summary-label">Con inconsistencias</div>
-      <div class="summary-number">{{ resumen.con_inconsistencia }}</div>
-      <div class="summary-percent">{{ porcentaje(resumen.con_inconsistencia) }} del total</div>
+    <div class="tarjeta-resumen inconsistencias">
+      <div class="etiqueta-resumen">Con inconsistencias</div>
+      <div class="numero-resumen">{{ resumen.con_inconsistencia }}</div>
+      <div class="porcentaje-resumen">{{ porcentaje(resumen.con_inconsistencia) }} del total</div>
       <div class="barra" aria-hidden="true"><span [style.width]="porcentaje(resumen.con_inconsistencia)"></span></div>
     </div>
   </div>

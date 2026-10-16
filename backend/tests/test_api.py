@@ -18,13 +18,14 @@ FAC-0002,2024-01-17,513510,CC-200,582500,0,Contabilizada
 """
 
 
-def test_health_check():
-    """Verifica que el endpoint /health responda correctamente con estado activo."""
-    respuesta = cliente.get("/health")
-    assert respuesta.status_code == 200
-    datos = respuesta.json()
-    assert datos["estado"] == "activo"
-    assert datos["servicio"] == "Conciliador de Facturas"
+def test_verificar_salud_servicio():
+    """Verifica que los endpoints /salud y /health respondan correctamente con estado activo."""
+    for ruta in ("/salud", "/health"):
+        respuesta = cliente.get(ruta)
+        assert respuesta.status_code == 200
+        datos = respuesta.json()
+        assert datos["estado"] == "activo"
+        assert datos["servicio"] == "Conciliador de Facturas"
 
 
 def test_conciliacion_exitosa():
@@ -99,5 +100,5 @@ def test_ruta_raiz_informativa():
     datos = respuesta.json()
     assert "mensaje" in datos
     assert datos["documentacion"] == "/docs"
-    assert datos["salud"] == "/health"
+    assert datos["salud"] == "/salud"
 

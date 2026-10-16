@@ -46,7 +46,11 @@ class RespuestaConciliacion(ModeloBase):
     resultados: List[ResultadoFactura] = Field(..., description="Lista con el detalle de cada factura procesada")
 
 
-class ErrorResponse(ModeloBase):
+class RespuestaError(ModeloBase):
     """Esquema estándar para mensajes de error del sistema."""
 
     detail: str = Field(..., description="Mensaje explicativo del error ocurrido")
+
+
+# Alias de retrocompatibilidad
+ErrorResponse = RespuestaError

@@ -69,5 +69,5 @@ def ruta_raiz():
     return {
         "mensaje": "Bienvenido al API del Conciliador de Facturas y Retenciones",
         "documentacion": "/docs",
-        "salud": "/health",
+        "salud": "/salud",
     }

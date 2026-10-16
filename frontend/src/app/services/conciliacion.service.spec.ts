@@ -31,4 +31,15 @@ describe('ConciliacionService', () => {
     expect((cuerpo.get('contabilidad') as File).name).toBe('contabilidad.csv');
     peticion.flush({ resumen: { total_facturas: 0, correctas: 0, con_inconsistencia: 0 }, resultados: [] });
   });
+
+  it('consulta el endpoint de salud del servicio en español (/salud)', () => {
+    let respuestaSalud: any;
+    servicio.verificarSalud().subscribe(resp => (respuestaSalud = resp));
+
+    const peticion = http.expectOne(`${environment.apiUrl}/salud`);
+    expect(peticion.request.method).toBe('GET');
+    peticion.flush({ estado: 'ok', servicio: 'conciliador-contable' });
+
+    expect(respuestaSalud).toEqual({ estado: 'ok', servicio: 'conciliador-contable' });
+  });
 });

@@ -22,7 +22,7 @@ describe('CargaArchivosComponent', () => {
   }
 
   function botonProcesar(): HTMLButtonElement {
-    return fixture.nativeElement.querySelector('.btn-process');
+    return fixture.nativeElement.querySelector('.boton-procesar');
   }
 
   it('deshabilita el botón de procesar hasta que se seleccionan ambos archivos', () => {
@@ -41,7 +41,7 @@ describe('CargaArchivosComponent', () => {
     componente.seleccionar('facturas', eventoCon(new File(['x'], 'facturas.xlsx')));
     fixture.detectChanges();
     expect(componente.archivos.facturas).toBeUndefined();
-    expect(fixture.nativeElement.querySelector('.error-message').textContent).toContain('no es un CSV');
+    expect(fixture.nativeElement.querySelector('.mensaje-error').textContent).toContain('no es un CSV');
   });
 
   it('emite ambos archivos al procesar', () => {

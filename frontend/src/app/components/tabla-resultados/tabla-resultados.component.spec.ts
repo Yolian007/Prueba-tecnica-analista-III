@@ -37,7 +37,7 @@ describe('TablaResultadosComponent', () => {
   });
 
   function filasVisibles(): number {
-    return fixture.nativeElement.querySelectorAll('tbody tr:not(:has(.empty-state))').length;
+    return fixture.nativeElement.querySelectorAll('tbody tr:not(:has(.estado-vacio))').length;
   }
 
   function seleccionarFiltro(valor: string): void {
@@ -74,6 +74,6 @@ describe('TablaResultadosComponent', () => {
     fixture.componentRef.setInput('resultados', [factura('FAC-0001', 'Correcta')]);
     fixture.detectChanges();
     seleccionarFiltro('Con inconsistencia');
-    expect(fixture.nativeElement.querySelector('.empty-state')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.estado-vacio')).not.toBeNull();
   });
 });

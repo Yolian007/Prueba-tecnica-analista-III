@@ -5,7 +5,7 @@ from typing import Any
 import pandas as pd
 
 
-def normalize_id(identificador: Any) -> str:
+def normalizar_id(identificador: Any) -> str:
     """Normaliza un identificador eliminando espacios en blanco al inicio y al final.
 
     Args:
@@ -22,7 +22,7 @@ def normalize_id(identificador: Any) -> str:
     return texto
 
 
-def validate_required_field(valor: Any) -> bool:
+def validar_campo_requerido(valor: Any) -> bool:
     """Comprueba si un campo requerido contiene información no nula y no vacía.
 
     Args:
@@ -39,7 +39,7 @@ def validate_required_field(valor: Any) -> bool:
     return True
 
 
-def validate_numeric_field(valor: Any, nombre_campo: str = "campo") -> Decimal:
+def validar_campo_numerico(valor: Any, nombre_campo: str = "campo") -> Decimal:
     """Convierte un valor a tipo Decimal para cálculos monetarios exactos.
 
     Args:
@@ -70,7 +70,7 @@ def validate_numeric_field(valor: Any, nombre_campo: str = "campo") -> Decimal:
         ) from exc
 
 
-def validate_tarifa(tarifa: Any) -> bool:
+def validar_tarifa(tarifa: Any) -> bool:
     """Valida que una tarifa porcentual se encuentre en el rango permitido [0, 1].
 
     Args:
@@ -80,14 +80,14 @@ def validate_tarifa(tarifa: Any) -> bool:
         True si la tarifa es válida y está entre 0 y 1, False en caso contrario.
     """
     try:
-        valor_decimal = validate_numeric_field(tarifa, "tarifa")
+        valor_decimal = validar_campo_numerico(tarifa, "tarifa")
         return Decimal("0.0") <= valor_decimal <= Decimal("1.0")
     except (ValueError, InvalidOperation):
         return False
 
 
-# Alias en español para mantener coherencia semántica en todo el código
-normalizar_id = normalize_id
-validar_campo_requerido = validate_required_field
-validar_campo_numerico = validate_numeric_field
-validar_tarifa = validate_tarifa
+# Alias de compatibilidad hacia atrás
+normalize_id = normalizar_id
+validate_required_field = validar_campo_requerido
+validate_numeric_field = validar_campo_numerico
+validate_tarifa = validar_tarifa

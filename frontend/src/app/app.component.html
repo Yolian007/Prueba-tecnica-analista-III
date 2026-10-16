@@ -1,22 +1,22 @@
-<div class="app-container">
-  <header class="app-header">
-    <div class="header-inner">
-      <div class="brand-mark" aria-hidden="true">
+<div class="contenedor-principal">
+  <header class="cabecera-principal">
+    <div class="contenido-cabecera">
+      <div class="marca-icono" aria-hidden="true">
         <svg class="icono" viewBox="0 0 24 24">
           <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
           <rect x="8" y="2" width="8" height="4" rx="1"/>
           <polyline points="9 14 11 16 15 12"/>
         </svg>
       </div>
-      <div class="header-text">
-        <p class="eyebrow">Gerencia de Evolución Contable y Tributaria</p>
+      <div class="texto-cabecera">
+        <p class="sobretitulo">Gerencia de Evolución Contable y Tributaria</p>
         <h1>Conciliador de Facturas y Retenciones</h1>
-        <p class="subtitle">Cruce automático entre facturas de proveedores y registros contables</p>
+        <p class="subtitulo">Cruce automático entre facturas de proveedores y registros contables</p>
       </div>
     </div>
   </header>
 
-  <main class="app-content">
+  <main class="contenido-principal">
     <app-carga-archivos
       [cargando]="cargando"
       [mensajeError]="mensajeError"
@@ -29,7 +29,7 @@
     }
   </main>
 
-  <footer class="app-footer">
+  <footer class="pie-principal">
     <p>Prototipo · Conciliador de Facturas y Retenciones · Prueba Técnica Analista III</p>
   </footer>
 </div>
