@@ -50,8 +50,7 @@ El proceso manual de cruce de facturas consume horas de trabajo por parte de los
 ```
 
 ### Material de Apoyo para Comités de Negocio
-- **Presentación Ejecutiva en Markdown:** [`docs/presentacion_ejecutiva.md`](docs/presentacion_ejecutiva.md) (Estructurada en 5 diapositivas ejecutivas).
-- **Presentación Interactiva Lista para Proyectar:** [`docs/presentacion_ejecutiva.html`](docs/presentacion_ejecutiva.html) (Diapositivas navegables en navegador sin dependencias externas).
+- **Diapositivas Ejecutivas en PowerPoint (.pptx):** [`docs/presentacion_ejecutiva.pptx`](docs/presentacion_ejecutiva.pptx) (Presentación profesional de 6 diapositivas con métricas, arquitectura, reglas de negocio y hoja de ruta).
 - **Declaración Formal de Uso de IA:** [`docs/declaracion_ia.md`](docs/declaracion_ia.md).
 
 ---
@@ -326,8 +325,7 @@ Prueba-tecnica-analista-III/
 │   └── facturas.csv                           # 50 facturas de proveedores
 ├── docs/                                      # Documentación ejecutiva complementaria
 │   ├── declaracion_ia.md                      # Declaración formal de uso de IA
-│   ├── presentacion_ejecutiva.md              # Presentación en formato Markdown
-│   └── presentacion_ejecutiva.html            # Presentación interactiva lista para proyectar
+│   └── presentacion_ejecutiva.pptx            # Diapositivas ejecutivas en PowerPoint (16:9)
 ├── backend/                                   # Servicio API REST en Python
 │   ├── .env.example                           # Configuración local del backend
 │   ├── requirements.txt                       # Dependencias fijas de Python
