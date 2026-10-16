@@ -83,3 +83,21 @@ def test_columnas_faltantes():
     assert respuesta.status_code == 400
     datos = respuesta.json()
     assert "columnas requeridas" in datos["detail"]
+
+
+def test_cabecera_tiempo_procesamiento():
+    """Verifica que el middleware inyecte la cabecera X-Process-Time en las respuestas."""
+    respuesta = cliente.get("/health")
+    assert "X-Process-Time" in respuesta.headers
+    assert respuesta.headers["X-Process-Time"].endswith("s")
+
+
+def test_ruta_raiz_informativa():
+    """Valida la respuesta informativa y los enlaces de documentación en la raíz '/'."""
+    respuesta = cliente.get("/")
+    assert respuesta.status_code == 200
+    datos = respuesta.json()
+    assert "mensaje" in datos
+    assert datos["documentacion"] == "/docs"
+    assert datos["salud"] == "/health"
+
