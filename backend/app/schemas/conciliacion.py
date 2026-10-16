@@ -4,7 +4,14 @@ from typing import List
 from pydantic import BaseModel, Field
 
 
-class ResultadoFactura(BaseModel):
+class ModeloBase(BaseModel):
+    """Modelo base que permite acceso por atributo y por clave para retrocompatibilidad."""
+
+    def __getitem__(self, clave: str):
+        return getattr(self, clave)
+
+
+class ResultadoFactura(ModeloBase):
     """Modelo detallado del resultado de validación y conciliación de una factura individual."""
 
     id_factura: str = Field(..., description="Identificador único de la factura")
@@ -21,7 +28,7 @@ class ResultadoFactura(BaseModel):
     inconsistencias: List[str] = Field(default_factory=list, description="Lista de descripciones de inconsistencias halladas")
 
 
-class ResumenConciliacion(BaseModel):
+class ResumenConciliacion(ModeloBase):
     """Resumen cuantitativo global del proceso de conciliación."""
 
     total_facturas: int = Field(..., description="Cantidad total de facturas analizadas")
@@ -29,14 +36,14 @@ class ResumenConciliacion(BaseModel):
     con_inconsistencia: int = Field(..., description="Cantidad de facturas que presentan alguna inconsistencia")
 
 
-class RespuestaConciliacion(BaseModel):
+class RespuestaConciliacion(ModeloBase):
     """Estructura de respuesta final del servicio de conciliación."""
 
     resumen: ResumenConciliacion = Field(..., description="Resumen estadístico de la conciliación")
     resultados: List[ResultadoFactura] = Field(..., description="Lista con el detalle de cada factura procesada")
 
 
-class ErrorResponse(BaseModel):
+class ErrorResponse(ModeloBase):
     """Esquema estándar para mensajes de error del sistema."""
 
     detail: str = Field(..., description="Mensaje explicativo del error ocurrido")
