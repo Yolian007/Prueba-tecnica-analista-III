@@ -188,16 +188,19 @@ LOG_LEVEL=INFO
 Todas las operaciones monetarias se realizan con `Decimal` y redondeo `ROUND_HALF_UP` a 2 decimales:
 
 1. **IVA Esperado:**
-   $$\text{IVA Esperado} = \text{base\_gravable} \times \text{tarifa\_iva}$$
-   Si $|\text{valor\_iva} - \text{IVA Esperado}| > 0.01$, se marca la inconsistencia **"Diferencia en IVA"**.
+   > `IVA Esperado = base_gravable × tarifa_iva`
+   
+   Si `|valor_iva - IVA Esperado| > 0.01`, se marca la inconsistencia **"Diferencia en IVA"**.
 
 2. **Retención Esperada:**
-   $$\text{Retención Esperada} = \text{base\_gravable} \times \text{tarifa\_retencion}$$
-   Si $|\text{valor\_retencion} - \text{Retención Esperada}| > 0.01$, se marca la inconsistencia **"Diferencia en retención"**.
+   > `Retención Esperada = base_gravable × tarifa_retencion`
+   
+   Si `|valor_retencion - Retención Esperada| > 0.01`, se marca la inconsistencia **"Diferencia en retención"**.
 
 3. **Total Esperado (Aislamiento de Errores):**
-   $$\text{Total Esperado} = \text{base\_gravable} + \text{IVA Esperado} - \text{valor\_retencion}$$
-   *Decisión de diseño:* Se utiliza el **IVA esperado** para calcular el total a pagar teórico, evitando que un error de IVA enmascare o compense una discrepancia en el total facturado.
+   > `Total Esperado = base_gravable + IVA Esperado − valor_retencion`
+   
+   *Decisión de diseño:* Se utiliza el **IVA esperado** para calcular el total a pagar teórico, evitando que un error de IVA enmascare o compense una discrepancia en el total facturado. Si `|total_factura - Total Esperado| > 0.01`, se anota **"Diferencia en total"**.
 
 4. **Detección de Duplicados:**
    Si un `id_factura` aparece repetido en el archivo de facturas, cada una de sus apariciones es marcada como **"Factura duplicada"** para auditoría completa sin descartar filas.
@@ -232,20 +235,20 @@ Sobre el lote oficial (`data/facturas.csv` y `data/contabilidad.csv`), los resul
 
 | Factura | Estado | Causas Identificadas |
 |---|:---:|---|
-| `FAC-0004` | Con inconsistencia | Factura duplicada · Diferencia con valor en contabilidad (Fila 50: $2.213.500 vs. débito $3.659.250) |
-| `FAC-0006` | Con inconsistencia | Diferencia en IVA (Reportado: $215.000 vs. Esperado: $190.000) |
+| `FAC-0004` | Con inconsistencia | Factura duplicada · Diferencia con valor en contabilidad (Fila 50: \$2.213.500 vs. débito \$3.659.250) |
+| `FAC-0006` | Con inconsistencia | Diferencia en IVA (Reportado: \$215.000 vs. Esperado: \$190.000) |
 | `FAC-0007` | Con inconsistencia | Factura sin registro contable |
-| `FAC-0009` | Con inconsistencia | Diferencia en total (Reportado: $4.484.000 vs. Esperado: $4.524.000) |
+| `FAC-0009` | Con inconsistencia | Diferencia en total (Reportado: \$4.484.000 vs. Esperado: \$4.524.000) |
 | `FAC-0011` | Con inconsistencia | Registro contable en estado Pendiente |
 | `FAC-0013` | Con inconsistencia | Campo obligatorio vacío: nit_proveedor |
-| `FAC-0015` | Con inconsistencia | Factura duplicada · Diferencia con valor en contabilidad (Fila 51: $3.425.100 vs. débito $3.603.250) |
-| `FAC-0018` | Con inconsistencia | Diferencia en IVA (Reportado: $645.500 vs. Esperado: $655.500) |
+| `FAC-0015` | Con inconsistencia | Factura duplicada · Diferencia con valor en contabilidad (Fila 51: \$3.425.100 vs. débito \$3.603.250) |
+| `FAC-0018` | Con inconsistencia | Diferencia en IVA (Reportado: \$645.500 vs. Esperado: \$655.500) |
 | `FAC-0021` | Con inconsistencia | Factura sin registro contable |
-| `FAC-0023` | Con inconsistencia | Diferencia en total (Reportado: $7.483.000 vs. Esperado: $7.363.000) |
+| `FAC-0023` | Con inconsistencia | Diferencia en total (Reportado: \$7.483.000 vs. Esperado: \$7.363.000) |
 | `FAC-0027` | Con inconsistencia | Registro contable en estado Pendiente |
 | `FAC-0029` | Con inconsistencia | Campo obligatorio vacío: concepto |
 | `FAC-0034` | Con inconsistencia | Factura sin registro contable |
-| `FAC-0036` | Con inconsistencia | Diferencia en total (Reportado: $2.144.250 vs. Esperado: $2.096.250) |
+| `FAC-0036` | Con inconsistencia | Diferencia en total (Reportado: \$2.144.250 vs. Esperado: \$2.096.250) |
 | `FAC-0039` | Con inconsistencia | Registro contable en estado Pendiente |
 | `FAC-0042` | Con inconsistencia | Factura sin registro contable · Campo obligatorio vacío: fecha_factura |
 
