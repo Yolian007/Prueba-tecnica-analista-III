@@ -52,6 +52,30 @@ def decodificar_contenido(contenido_bytes: bytes, nombre_archivo: str = "archivo
     )
 
 
+def detectar_delimitador(texto_csv: str) -> str:
+    """Detecta de forma inteligente el delimitador más probable del archivo (coma, punto y coma o tabulador).
+
+    Analiza la primera fila con contenido para determinar la frecuencia de los separadores candidatos.
+    """
+    lineas = [linea.strip() for linea in texto_csv.splitlines() if linea.strip()]
+    if not lineas:
+        return ","
+
+    primera_linea = lineas[0]
+    conteo_coma = primera_linea.count(",")
+    conteo_punto_coma = primera_linea.count(";")
+    conteo_tab = primera_linea.count("\t")
+
+    candidatos = [
+        (",", conteo_coma),
+        (";", conteo_punto_coma),
+        ("\t", conteo_tab),
+    ]
+
+    delimitador_elegido, max_apariciones = max(candidatos, key=lambda x: x[1])
+    return delimitador_elegido if max_apariciones > 0 else ","
+
+
 def leer_csv(
     origen_datos: Union[bytes, str, io.BytesIO, io.StringIO, Any],
     columnas_requeridas: List[str],
@@ -100,11 +124,14 @@ def leer_csv(
     if not texto_csv.strip():
         raise ErrorValidacionCSV(f"El archivo '{nombre_archivo}' está vacío o no contiene registros.")
 
+    # Detección dinámica del separador más idóneo
+    delimitador = detectar_delimitador(texto_csv)
+
     # Parseo a DataFrame utilizando Pandas
     try:
         df = pd.read_csv(
             io.StringIO(texto_csv),
-            sep=",",
+            sep=delimitador,
             dtype=str,
             keep_default_na=False,
             skipinitialspace=True,

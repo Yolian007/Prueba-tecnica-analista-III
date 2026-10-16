@@ -2,14 +2,21 @@
 
 import os
 from typing import List
+from dotenv import load_dotenv
+
+# Carga de variables de entorno desde archivo .env local si existe
+load_dotenv()
 
 
 class Configuracion:
     """Clase de configuración que carga parámetros desde variables de entorno con valores por defecto."""
 
-    TITULO_PROYECTO: str = "Conciliador de Facturas y Retenciones"
-    VERSION: str = "1.0.0"
-    DESCRIPCION: str = "Servicio backend para conciliación automática de facturas y registros contables."
+    TITULO_PROYECTO: str = os.getenv("TITULO_PROYECTO", "Conciliador de Facturas y Retenciones")
+    VERSION: str = os.getenv("VERSION_PROYECTO", "1.0.0")
+    DESCRIPCION: str = os.getenv(
+        "DESCRIPCION_PROYECTO",
+        "Servicio backend para conciliación automática de facturas y registros contables.",
+    )
     HOST: str = os.getenv("BACKEND_HOST", "0.0.0.0")
     PORT: int = int(os.getenv("BACKEND_PORT", "8000"))
 

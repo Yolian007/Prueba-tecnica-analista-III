@@ -6,6 +6,7 @@ from app.services.lector_csv import (
     leer_csv,
     leer_csv_facturas,
     leer_csv_contabilidad,
+    detectar_delimitador,
     ErrorValidacionCSV,
     COLUMNAS_FACTURAS,
     COLUMNAS_CONTABILIDAD,
@@ -80,3 +81,25 @@ def test_codificacion_latin1():
     df = leer_csv_facturas(bytes_latin1)
     assert len(df) == 1
     assert "Reparación" in df.iloc[0]["concepto"]
+
+
+def test_detectar_delimitador():
+    """Valida la detección de comas, punto y coma y tabulaciones en el encabezado."""
+    assert detectar_delimitador("col1,col2,col3\n1,2,3") == ","
+    assert detectar_delimitador("col1;col2;col3\n1;2;3") == ";"
+    assert detectar_delimitador("col1\tcol2\tcol3\n1\t2\t3") == "\t"
+    assert detectar_delimitador("") == ","
+
+
+def test_leer_facturas_con_delimitador_punto_y_coma():
+    """Valida que un archivo CSV separado por punto y coma (común en Excel en español) se lea correctamente."""
+    csv_punto_coma = (
+        "id_factura;nit_proveedor;fecha_factura;concepto;base_gravable;tarifa_iva;valor_iva;tarifa_retencion;valor_retencion;total_factura\n"
+        "FAC-0050;900999999-1;2024-02-10;Servicios cloud;2000000;0.19;380000;0.04;80000;2300000\n"
+    )
+    df = leer_csv_facturas(csv_punto_coma.encode("utf-8"))
+    assert len(df) == 1
+    assert df.iloc[0]["id_factura"] == "FAC-0050"
+    assert df.iloc[0]["base_gravable"] == "2000000"
+    assert df.iloc[0]["total_factura"] == "2300000"
+
