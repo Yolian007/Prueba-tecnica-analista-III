@@ -7,9 +7,12 @@ from app.services.reglas import (
     ReglaIdentificadorObligatorio,
     ReglaBaseGravableObligatoria,
     ReglaDiferenciaIVA,
+    ReglaDiferenciaRetencion,
     ReglaDiferenciaTotal,
     ReglaFacturaDuplicada,
     ReglaFacturaSinContabilidad,
+    ReglaEstadoContabilizacion,
+    ReglaCruceValorContable,
     ReglaCamposObligatoriosAdicionales,
 )
 
@@ -160,3 +163,61 @@ def test_motor_orquestacion_completa():
     assert "Diferencia en total" in resultado
     assert "Factura duplicada" in resultado
     assert "Factura sin registro contable" in resultado
+
+
+def test_regla_diferencia_retencion():
+    """Valida la detección de discrepancias en el cálculo de la retención."""
+    regla = ReglaDiferenciaRetencion()
+
+    ctx_correcto = _crear_contexto_base(
+        valor_retencion=Decimal("40000.00"),
+        retencion_esperada=Decimal("40000.00"),
+    )
+    assert regla.evaluar(ctx_correcto) == []
+
+    ctx_discrepancia = _crear_contexto_base(
+        valor_retencion=Decimal("50000.00"),
+        retencion_esperada=Decimal("40000.00"),
+    )
+    assert regla.evaluar(ctx_discrepancia) == ["Diferencia en retención"]
+
+
+def test_regla_estado_contabilizacion():
+    """Valida que registros contables con estado Pendiente sean detectados."""
+    regla = ReglaEstadoContabilizacion()
+
+    ctx_contabilizado = _crear_contexto_base(
+        id_factura="FAC-100",
+        ids_contabilidad={"FAC-100"},
+        estados_contabilidad_factura={"Contabilizada"},
+    )
+    assert regla.evaluar(ctx_contabilizado) == []
+
+    ctx_pendiente = _crear_contexto_base(
+        id_factura="FAC-100",
+        ids_contabilidad={"FAC-100"},
+        estados_contabilidad_factura={"Pendiente"},
+    )
+    assert regla.evaluar(ctx_pendiente) == ["Registro contable en estado Pendiente"]
+
+
+def test_regla_cruce_valor_contable():
+    """Valida el cruce entre el total de la factura y los importes registrados en contabilidad."""
+    regla = ReglaCruceValorContable()
+
+    ctx_coincidente = _crear_contexto_base(
+        id_factura="FAC-100",
+        total_factura=Decimal("1150000.00"),
+        ids_contabilidad={"FAC-100"},
+        valores_contabilidad_factura=[Decimal("1150000.00")],
+    )
+    assert regla.evaluar(ctx_coincidente) == []
+
+    ctx_divergente = _crear_contexto_base(
+        id_factura="FAC-100",
+        total_factura=Decimal("1150000.00"),
+        ids_contabilidad={"FAC-100"},
+        valores_contabilidad_factura=[Decimal("2000000.00")],
+    )
+    assert regla.evaluar(ctx_divergente) == ["Diferencia con valor en contabilidad"]
+

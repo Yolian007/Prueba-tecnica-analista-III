@@ -1,7 +1,7 @@
 """Servicio principal de conciliación entre facturas y registros contables."""
 
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
-from typing import Any, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set
 import pandas as pd
 
 from app.schemas.conciliacion import (
@@ -44,6 +44,8 @@ def _extraer_contexto_fila(
     fila: pd.Series,
     ids_duplicados: Set[str],
     ids_contabilidad: Set[str],
+    estados_contabilidad_factura: Set[str],
+    valores_contabilidad_factura: List[Decimal],
 ) -> ContextoFactura:
     """Parsea y prepara el contexto numérico y de metadatos de una fila para evaluación."""
     id_factura = str(fila.get("id_factura", "")).strip()
@@ -99,6 +101,7 @@ def _extraer_contexto_fila(
 
     # Cálculos esperados con redondeo financiero
     iva_esperado = (base_gravable * tarifa_iva).quantize(DOS_DECIMALES, rounding=ROUND_HALF_UP)
+    retencion_esperada = (base_gravable * tarifa_retencion).quantize(DOS_DECIMALES, rounding=ROUND_HALF_UP)
     total_esperado = (base_gravable + iva_esperado - valor_retencion).quantize(
         DOS_DECIMALES, rounding=ROUND_HALF_UP
     )
@@ -120,6 +123,9 @@ def _extraer_contexto_fila(
         fila_cruda=fila.to_dict(),
         ids_duplicados=ids_duplicados,
         ids_contabilidad=ids_contabilidad,
+        retencion_esperada=retencion_esperada,
+        estados_contabilidad_factura=estados_contabilidad_factura,
+        valores_contabilidad_factura=valores_contabilidad_factura,
     )
 
 
@@ -161,6 +167,31 @@ def procesar_conciliacion(
         if str(ident).strip() != ""
     }
 
+    # Mapeo de estados y valores débito por cada factura en contabilidad
+    estados_contabilidad: Dict[str, Set[str]] = {}
+    valores_contabilidad: Dict[str, List[Decimal]] = {}
+
+    for _, fila_c in df_c.iterrows():
+        ident_c = normalize_id(fila_c.get("id_factura"))
+        if not ident_c:
+            continue
+
+        estado_texto = str(fila_c.get("estado", "")).strip()
+        if ident_c not in estados_contabilidad:
+            estados_contabilidad[ident_c] = set()
+        if estado_texto:
+            estados_contabilidad[ident_c].add(estado_texto)
+
+        try:
+            val_deb = validate_numeric_field(fila_c.get("valor_debito", "0"), "valor_debito").quantize(
+                DOS_DECIMALES, rounding=ROUND_HALF_UP
+            )
+            if ident_c not in valores_contabilidad:
+                valores_contabilidad[ident_c] = []
+            valores_contabilidad[ident_c].append(val_deb)
+        except Exception:
+            pass
+
     # Detección de identificadores duplicados en facturación
     facturas_con_id = df_f[df_f["id_factura"] != ""]["id_factura"]
     conteo_ids = facturas_con_id.value_counts()
@@ -169,9 +200,22 @@ def procesar_conciliacion(
     resultados_facturas: List[ResultadoFactura] = []
 
     for _, fila in df_f.iterrows():
-        contexto = _extraer_contexto_fila(fila, ids_duplicados, ids_contabilidad)
+        id_actual = normalize_id(fila.get("id_factura"))
+        estados_asociados = estados_contabilidad.get(id_actual, set())
+        valores_asociados = valores_contabilidad.get(id_actual, [])
+
+        contexto = _extraer_contexto_fila(
+            fila=fila,
+            ids_duplicados=ids_duplicados,
+            ids_contabilidad=ids_contabilidad,
+            estados_contabilidad_factura=estados_asociados,
+            valores_contabilidad_factura=valores_asociados,
+        )
         inconsistencias = motor_activo.evaluar_factura(contexto)
         estado = "Correcta" if len(inconsistencias) == 0 else "Con inconsistencia"
+
+        estado_contable_desc = ", ".join(sorted(estados_asociados)) if estados_asociados else "Sin registro"
+        valor_contable_desc = _formatear_decimal(valores_asociados[0]) if valores_asociados else None
 
         item = ResultadoFactura(
             id_factura=contexto.id_factura,
@@ -184,6 +228,9 @@ def procesar_conciliacion(
             total_reportado=_formatear_decimal(contexto.total_factura),
             total_esperado=_formatear_decimal(contexto.total_esperado),
             retencion_reportada=_formatear_decimal(contexto.valor_retencion),
+            retencion_esperada=_formatear_decimal(contexto.retencion_esperada),
+            estado_contable=estado_contable_desc,
+            valor_contable=valor_contable_desc,
             estado=estado,
             inconsistencias=inconsistencias,
         )

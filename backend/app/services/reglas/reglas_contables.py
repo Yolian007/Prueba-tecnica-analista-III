@@ -33,6 +33,15 @@ class ReglaDiferenciaIVA(ReglaConciliacion):
         return []
 
 
+class ReglaDiferenciaRetencion(ReglaConciliacion):
+    """Verifica que el valor de retención reportado coincida con base_gravable * tarifa_retencion."""
+
+    def evaluar(self, contexto: ContextoFactura) -> List[str]:
+        if contexto.valor_retencion != contexto.retencion_esperada:
+            return ["Diferencia en retención"]
+        return []
+
+
 class ReglaDiferenciaTotal(ReglaConciliacion):
     """Verifica que el total reportado coincida con base + iva_esperado - retencion."""
 
@@ -57,6 +66,30 @@ class ReglaFacturaSinContabilidad(ReglaConciliacion):
     def evaluar(self, contexto: ContextoFactura) -> List[str]:
         if contexto.id_factura and contexto.id_factura not in contexto.ids_contabilidad:
             return ["Factura sin registro contable"]
+        return []
+
+
+class ReglaEstadoContabilizacion(ReglaConciliacion):
+    """Detecta si el registro contable asociado en contabilidad se encuentra en estado Pendiente."""
+
+    def evaluar(self, contexto: ContextoFactura) -> List[str]:
+        if not contexto.id_factura or contexto.id_factura not in contexto.ids_contabilidad:
+            return []
+        if any(estado.strip().lower() == "pendiente" for estado in contexto.estados_contabilidad_factura):
+            return ["Registro contable en estado Pendiente"]
+        return []
+
+
+class ReglaCruceValorContable(ReglaConciliacion):
+    """Verifica que el valor total de la factura coincida con el valor asentado en contabilidad."""
+
+    def evaluar(self, contexto: ContextoFactura) -> List[str]:
+        if not contexto.id_factura or contexto.id_factura not in contexto.ids_contabilidad:
+            return []
+        if not contexto.valores_contabilidad_factura:
+            return []
+        if not any(val == contexto.total_factura for val in contexto.valores_contabilidad_factura):
+            return ["Diferencia con valor en contabilidad"]
         return []
 
 

@@ -26,6 +26,9 @@ class ContextoFactura:
     fila_cruda: Dict[str, Any]
     ids_duplicados: Set[str] = field(default_factory=set)
     ids_contabilidad: Set[str] = field(default_factory=set)
+    retencion_esperada: Decimal = Decimal("0.00")
+    estados_contabilidad_factura: Set[str] = field(default_factory=set)
+    valores_contabilidad_factura: List[Decimal] = field(default_factory=list)
 
 
 class ReglaConciliacion(ABC):

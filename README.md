@@ -180,27 +180,37 @@ Columnas requeridas:
    $$\text{IVA Esperado} = \text{base\_gravable} \times \text{tarifa\_iva}$$
    Si el valor absoluto de la diferencia entre `valor_iva` y el IVA Esperado supera $0.01, se registra la inconsistencia **"Diferencia en IVA"**.
 
-2. **Total Esperado:**
+2. **Retención Esperada:**
+   $$\text{Retención Esperada} = \text{base\_gravable} \times \text{tarifa\_retencion}$$
+   Si el valor informado en `valor_retencion` difiere del cálculo teórico con base en la tarifa aplicada, se reporta la inconsistencia **"Diferencia en retención"**.
+
+3. **Total Esperado:**
    $$\text{Total Esperado} = \text{base\_gravable} + \text{IVA Esperado} - \text{valor\_retencion}$$
    *Decisión de diseño:* Se utiliza el **IVA esperado** en el cálculo del total para evitar que un IVA erróneo reportado por el emisor enmascare o compense una discrepancia en el total facturado. Si el total reportado difiere del esperado, se registra la inconsistencia **"Diferencia en total"**.
 
-3. **Detección de Duplicados:**
+4. **Detección de Duplicados:**
    Se evalúa la frecuencia de cada `id_factura`. Si un identificador aparece en más de una fila del archivo de facturación, cada una de sus ocurrencias es marcada como **"Factura duplicada"**.
 
-4. **Factura sin Registro Contable:**
+5. **Factura sin Registro Contable:**
    Se contrasta el conjunto de `id_factura` de facturación contra los identificadores presentes en el archivo contable. Si no existe asiento para dicha factura, se reporta **"Factura sin registro contable"**.
 
-5. **Campos Obligatorios Vacíos:**
+6. **Estados de Contabilización (Auditoría Contable):**
+   Se examina el estado del registro contable asociado. Si una factura figura en contabilidad con estado **"Pendiente"** (asiento no asentado en firme), se reporta **"Registro contable en estado Pendiente"**.
+
+7. **Cruce de Valores Contables:**
+   Se confronta el `total_factura` contra el importe debitado en contabilidad (`valor_debito`). Si el asiento no coincide con el total facturado, se anota **"Diferencia con valor en contabilidad"**.
+
+8. **Campos Obligatorios Vacíos:**
    Si se detecta ausencia o vacuidad en campos indispensables (`nit_proveedor`, `fecha_factura`, `concepto`), se anota **"Campo obligatorio vacío: [nombre_campo]"**.
 
-6. **Clasificación:**
+9. **Clasificación:**
    Una factura se clasifica como **"Correcta"** si y sólo si la lista de inconsistencias está vacía. En caso contrario se clasifica como **"Con inconsistencia"**.
 
 ---
 
 ## 10. Pruebas Automatizadas
 
-El backend incluye una batería completa de 24 pruebas con `pytest` que verifican lectura de CSV, validaciones de tipos, reglas de negocio y respuestas de la API REST.
+El backend incluye una batería completa de **43 pruebas automatizadas con `pytest`** que verifican lectura de CSV (con detección de delimitadores `,`, `;` y `\t`), validaciones numéricas con `Decimal`, reglas de negocio contables desacopladas, servicio de aplicación, middleware y respuestas HTTP de la API REST.
 
 Para ejecutar todas las pruebas (con el entorno virtual de la sección 5 ya creado):
 - En Windows (PowerShell):
@@ -214,15 +224,17 @@ Para ejecutar todas las pruebas (con el entorno virtual de la sección 5 ya crea
   ./venv/bin/python -m pytest tests -v
   ```
 
-### Cobertura de las Pruebas:
-- `tests/test_lector_csv.py`: Verificación de archivos válidos, archivos vacíos, columnas faltantes, tolerancia a columnas adicionales y codificaciones (UTF-8 / Latin-1).
-- `tests/test_validaciones.py`: Conversión de números, tipos inválidos, normalización de identificadores y rangos de tarifas.
-- `tests/test_conciliacion.py`: Facturas correctas, diferencias de IVA, diferencias de total, duplicados, ausencia en contabilidad, acumulación de múltiples fallas simultáneas y consistencia del resumen.
-- `tests/test_api.py`: Integración HTTP con `httpx.AsyncClient` sobre endpoints `/health` y `POST /api/conciliacion` (casos de éxito, error 400 por archivo faltante o corrupto).
+### Cobertura de las Pruebas Backend:
+- `tests/test_lector_csv.py`: Verificación de archivos válidos, archivos vacíos, columnas faltantes, tolerancia a columnas adicionales, detección automática de delimitadores (soporte para `;` y `,`) y codificaciones (UTF-8 / Latin-1).
+- `tests/test_validaciones.py`: Conversión de números a Decimal, tipos inválidos, normalización de identificadores y rangos de tarifas.
+- `tests/test_reglas.py`: Pruebas aisladas para cada regla de negocio (IVA, retenciones, totales, duplicados, ausencia contable, estado pendiente, diferencias de valor débito).
+- `tests/test_conciliacion.py`: Facturas correctas, acumulación de múltiples fallas simultáneas y consistencia global del resumen.
+- `tests/test_servicio_conciliacion.py`: Pruebas de integración de la capa de aplicación con inyección de dependencias.
+- `tests/test_api.py`: Integración HTTP con `TestClient` sobre `/health`, `/` y `POST /api/conciliacion` (casos de éxito, error 400 por archivo faltante o corrupto, cabecera `X-Process-Time`).
 
 ### Pruebas del Frontend
 
-El frontend incluye 17 pruebas unitarias con Jasmine/Karma (requieren Google Chrome instalado):
+El frontend incluye **17 pruebas unitarias con Jasmine/Karma** (ejecutables con Google Chrome o ChromeHeadless):
 ```bash
 cd frontend
 npx ng test --watch=false --browsers=ChromeHeadless
@@ -237,29 +249,32 @@ npx ng test --watch=false --browsers=ChromeHeadless
 
 ## 11. Resultados Obtenidos con los Datos de Prueba
 
-Sobre el lote de prueba oficial (`data/facturas.csv` y `data/contabilidad.csv`), los resultados arrojados por el sistema son:
+Sobre el lote de prueba oficial (`data/facturas.csv` y `data/contabilidad.csv`), los resultados arrojados bajo la conciliación integral profunda son:
 
 ```json
 {
   "total_facturas": 50,
-  "correctas": 35,
-  "con_inconsistencia": 15
+  "correctas": 32,
+  "con_inconsistencia": 18
 }
 ```
 
 ### Detalle de Inconsistencias Detectadas:
-- `FAC-0004`: **Factura duplicada** (filas 5 y 50).
+- `FAC-0004`: **Factura duplicada** (filas 5 y 50) y **Diferencia con valor en contabilidad** (segunda ocurrencia por $2.213.500 vs. débito $3.659.250).
 - `FAC-0006`: **Diferencia en IVA** (IVA reportado: $215.000 vs. Esperado: $190.000).
 - `FAC-0007`: **Factura sin registro contable** (no figura en contabilidad).
 - `FAC-0009`: **Diferencia en total** (Total reportado difiere de base + IVA esp. - ret).
+- `FAC-0011`: **Registro contable en estado Pendiente** (registro contable no asentado en firme).
 - `FAC-0013`: **Campo obligatorio vacío: nit_proveedor**.
-- `FAC-0015`: **Factura duplicada** (filas 16 y 51).
+- `FAC-0015`: **Factura duplicada** (filas 16 y 51) y **Diferencia con valor en contabilidad** (segunda ocurrencia por $3.425.100 vs. débito $3.603.250).
 - `FAC-0018`: **Diferencia en IVA** (IVA reportado: $645.500 vs. Esperado: $655.500).
 - `FAC-0021`: **Factura sin registro contable**.
 - `FAC-0023`: **Diferencia en total**.
+- `FAC-0027`: **Registro contable en estado Pendiente**.
 - `FAC-0029`: **Campo obligatorio vacío: concepto**.
 - `FAC-0034`: **Factura sin registro contable**.
 - `FAC-0036`: **Diferencia en total**.
+- `FAC-0039`: **Registro contable en estado Pendiente**.
 - `FAC-0042`: **Factura sin registro contable** y **Campo obligatorio vacío: fecha_factura**.
 
 ---

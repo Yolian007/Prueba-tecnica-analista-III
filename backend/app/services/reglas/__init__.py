@@ -6,9 +6,12 @@ from app.services.reglas.reglas_contables import (
     ReglaIdentificadorObligatorio,
     ReglaBaseGravableObligatoria,
     ReglaDiferenciaIVA,
+    ReglaDiferenciaRetencion,
     ReglaDiferenciaTotal,
     ReglaFacturaDuplicada,
     ReglaFacturaSinContabilidad,
+    ReglaEstadoContabilizacion,
+    ReglaCruceValorContable,
     ReglaCamposObligatoriosAdicionales,
 )
 
@@ -19,8 +22,11 @@ __all__ = [
     "ReglaIdentificadorObligatorio",
     "ReglaBaseGravableObligatoria",
     "ReglaDiferenciaIVA",
+    "ReglaDiferenciaRetencion",
     "ReglaDiferenciaTotal",
     "ReglaFacturaDuplicada",
     "ReglaFacturaSinContabilidad",
+    "ReglaEstadoContabilizacion",
+    "ReglaCruceValorContable",
     "ReglaCamposObligatoriosAdicionales",
 ]

@@ -7,9 +7,12 @@ from app.services.reglas.reglas_contables import (
     ReglaIdentificadorObligatorio,
     ReglaBaseGravableObligatoria,
     ReglaDiferenciaIVA,
+    ReglaDiferenciaRetencion,
     ReglaDiferenciaTotal,
     ReglaFacturaDuplicada,
     ReglaFacturaSinContabilidad,
+    ReglaEstadoContabilizacion,
+    ReglaCruceValorContable,
     ReglaCamposObligatoriosAdicionales,
 )
 
@@ -25,14 +28,17 @@ class MotorReglasConciliacion:
 
     @staticmethod
     def obtener_reglas_predeterminadas() -> List[ReglaConciliacion]:
-        """Retorna el conjunto estándar de reglas de negocio para la conciliación."""
+        """Retorna el conjunto estándar y completo de reglas de negocio contables."""
         return [
             ReglaIdentificadorObligatorio(),
             ReglaBaseGravableObligatoria(),
             ReglaDiferenciaIVA(),
+            ReglaDiferenciaRetencion(),
             ReglaDiferenciaTotal(),
             ReglaFacturaDuplicada(),
             ReglaFacturaSinContabilidad(),
+            ReglaEstadoContabilizacion(),
+            ReglaCruceValorContable(),
             ReglaCamposObligatoriosAdicionales(),
         ]
 

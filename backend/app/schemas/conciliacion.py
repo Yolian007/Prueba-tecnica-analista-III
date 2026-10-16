@@ -1,6 +1,6 @@
 """Modelos de datos Pydantic para el proceso de conciliación de facturas."""
 
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, Field
 
 
@@ -24,6 +24,9 @@ class ResultadoFactura(ModeloBase):
     total_reportado: str = Field(..., description="Valor total reportado en la factura")
     total_esperado: str = Field(..., description="Valor total esperado según la fórmula base + IVA esperado - retención")
     retencion_reportada: str = Field(..., description="Valor de retención reportado en la factura")
+    retencion_esperada: Optional[str] = Field(default=None, description="Valor de retención calculado según base × tarifa_retención")
+    estado_contable: Optional[str] = Field(default=None, description="Estado del registro contable asociado (ej. Contabilizada, Pendiente)")
+    valor_contable: Optional[str] = Field(default=None, description="Valor asentado en el débito contable")
     estado: str = Field(..., description="Estado de la factura: 'Correcta' o 'Con inconsistencia'")
     inconsistencias: List[str] = Field(default_factory=list, description="Lista de descripciones de inconsistencias halladas")
 

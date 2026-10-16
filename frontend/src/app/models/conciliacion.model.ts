@@ -11,6 +11,9 @@ export interface ResultadoFactura {
   total_reportado: string;
   total_esperado: string;
   retencion_reportada: string;
+  retencion_esperada?: string;
+  estado_contable?: string;
+  valor_contable?: string;
   estado: EstadoFactura;
   inconsistencias: string[];
 }
