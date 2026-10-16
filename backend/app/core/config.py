@@ -23,9 +23,9 @@ class Configuracion:
     @property
     def ORIGENES_PERMITIDOS(self) -> List[str]:
         """Retorna la lista de orígenes permitidos para solicitudes de CORS."""
-        origenes_crudos = os.getenv("ALLOWED_ORIGINS", "http://localhost:4200")
-        if not origenes_crudos:
-            return ["http://localhost:4200"]
+        origenes_crudos = os.getenv("ALLOWED_ORIGINS", "*")
+        if not origenes_crudos or origenes_crudos.strip() == "*":
+            return ["*"]
         return [origen.strip() for origen in origenes_crudos.split(",") if origen.strip()]
 
 

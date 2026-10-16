@@ -20,10 +20,11 @@ app = FastAPI(
 )
 
 # Configuración del middleware de CORS para comunicación con el frontend
+permitir_credenciales = "*" not in configuracion.ORIGENES_PERMITIDOS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=configuracion.ORIGENES_PERMITIDOS,
-    allow_credentials=True,
+    allow_credentials=permitir_credenciales,
     allow_methods=["*"],
     allow_headers=["*"],
 )
