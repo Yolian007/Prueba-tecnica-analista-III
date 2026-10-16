@@ -9,7 +9,7 @@ if DIRECTORIO_BACKEND not in sys.path:
 import time
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 
 from app.api.routes import router
 from app.core.config import configuracion
@@ -66,15 +66,32 @@ async def manejador_excepcion_no_controlada(request: Request, exc: Exception) ->
     )
 
 
+# Directorio de distribución estática del frontend (si existe compilado)
+DIRECTORIO_ESTATICO = Path(__file__).resolve().parent / "static"
+
 # Inclusión de enrutador principal de la API
 app.include_router(router)
 
 
 @app.get("/", include_in_schema=False)
-def ruta_raiz():
-    """Redirección informativa en la raíz de la API."""
+def ruta_raiz(request: Request):
+    """Retorna la aplicación web Angular para navegadores, o información JSON para clientes API."""
+    encabezado_accept = request.headers.get("accept", "")
+    if "text/html" in encabezado_accept and (DIRECTORIO_ESTATICO / "index.html").exists():
+        return FileResponse(str(DIRECTORIO_ESTATICO / "index.html"))
     return {
         "mensaje": "Bienvenido al API del Conciliador de Facturas y Retenciones",
         "documentacion": "/docs",
         "salud": "/salud",
     }
+
+
+@app.get("/{archivo_estatico:path}", include_in_schema=False)
+async def servir_estaticos(archivo_estatico: str):
+    """Sirve los paquetes compilados de Angular (JS, CSS, favicons) o redirige a la SPA."""
+    ruta_archivo = DIRECTORIO_ESTATICO / archivo_estatico
+    if ruta_archivo.is_file():
+        return FileResponse(str(ruta_archivo))
+    if (DIRECTORIO_ESTATICO / "index.html").exists():
+        return FileResponse(str(DIRECTORIO_ESTATICO / "index.html"))
+    raise HTTPException(status_code=404, detail="Recurso no encontrado")
