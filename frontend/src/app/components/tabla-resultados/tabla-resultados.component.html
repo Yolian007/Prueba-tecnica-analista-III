@@ -1,0 +1,73 @@
+<section class="results-section">
+  <div class="results-header">
+    <h2>Detalle de resultados</h2>
+    <div class="filter-controls">
+      <label for="filtro-estado">Filtrar por estado:</label>
+      <select id="filtro-estado" (change)="cambiarFiltro($event)">
+        @for (opcion of opcionesFiltro; track opcion) {
+          <option [value]="opcion" [selected]="opcion === filtro">{{ opcion }}</option>
+        }
+      </select>
+      <span class="filter-count">Mostrando {{ filtrados.length }} de {{ resultados.length }} facturas</span>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Factura</th>
+          <th>Proveedor</th>
+          <th>Concepto</th>
+          <th class="num">Base Gravable</th>
+          <th class="num">IVA Reportado</th>
+          <th class="num">IVA Esperado</th>
+          <th class="num">Retención</th>
+          <th class="num">Total Reportado</th>
+          <th class="num">Total Esperado</th>
+          <th>Estado</th>
+          <th>Causas</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of filtrados; track $index) {
+          <tr [class.row-inconsistencia]="r.estado === 'Con inconsistencia'">
+            <td class="id-cell">{{ r.id_factura || '—' }}</td>
+            <td>{{ r.nit_proveedor || '—' }}</td>
+            <td>{{ r.concepto || '—' }}</td>
+            <td class="num">{{ r.base_gravable | monedaCop }}</td>
+            <td class="num" [class.valor-diferente]="r.iva_reportado !== r.iva_esperado">{{ r.iva_reportado | monedaCop }}</td>
+            <td class="num">{{ r.iva_esperado | monedaCop }}</td>
+            <td class="num">{{ r.retencion_reportada | monedaCop }}</td>
+            <td class="num" [class.valor-diferente]="r.total_reportado !== r.total_esperado">{{ r.total_reportado | monedaCop }}</td>
+            <td class="num">{{ r.total_esperado | monedaCop }}</td>
+            <td>
+              <span class="badge" [class.badge-correcta]="r.estado === 'Correcta'" [class.badge-inconsistencia]="r.estado === 'Con inconsistencia'">
+                {{ r.estado }}
+              </span>
+            </td>
+            <td class="causas-cell">
+              @if (r.inconsistencias.length > 0) {
+                <ul>
+                  @for (causa of r.inconsistencias; track causa) {
+                    <li>{{ causa }}</li>
+                  }
+                </ul>
+              } @else {
+                <span class="sin-causas">—</span>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="11" class="empty-state">No hay facturas con el estado seleccionado.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">
+    IVA esperado = base gravable × tarifa IVA · Total esperado = base gravable + IVA esperado − retención.
+    Los valores en rojo difieren del cálculo esperado.
+  </p>
+</section>

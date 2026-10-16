@@ -1,0 +1,116 @@
+@use 'variables' as *;
+
+.summary-section {
+  margin-bottom: 2rem;
+
+  h2 {
+    @include section-title;
+  }
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.summary-card {
+  @include card;
+  position: relative;
+  padding: 1.5rem 1.75rem;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 6px;
+  }
+
+  &.total {
+    background: $brand-black;
+    color: $surface;
+
+    &::before {
+      background: $brand-yellow;
+    }
+
+    .summary-label,
+    .summary-percent {
+      color: rgba($surface, 0.75);
+    }
+
+    .summary-number {
+      color: $brand-yellow;
+    }
+  }
+
+  &.correctas {
+    &::before {
+      background: $success;
+    }
+
+    .summary-number {
+      color: $success-strong;
+    }
+
+    .barra span {
+      background: $success;
+    }
+  }
+
+  &.inconsistencias {
+    &::before {
+      background: $danger;
+    }
+
+    .summary-number {
+      color: $danger;
+    }
+
+    .barra span {
+      background: $danger;
+    }
+  }
+
+  .summary-label {
+    color: $muted;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .summary-number {
+    font-size: 2.75rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin: 0.35rem 0 0.2rem;
+  }
+
+  .summary-percent {
+    color: $muted;
+    font-size: 0.85rem;
+  }
+
+  .barra {
+    margin-top: 0.8rem;
+    height: 6px;
+    border-radius: $radius-pill;
+    background: $bg;
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      border-radius: $radius-pill;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-mobile) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}

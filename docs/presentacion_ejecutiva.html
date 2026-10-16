@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Presentación Ejecutiva - Conciliador de Facturas y Retenciones</title>
+  <style>
+    :root {
+      --primary: #1a5276;
+      --primary-light: #2980b9;
+      --secondary: #f39c12;
+      --success: #27ae60;
+      --danger: #e74c3c;
+      --bg: #f4f6f9;
+      --text: #2c3e50;
+      --card: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .deck-container {
+      width: 100%;
+      max-width: 960px;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 560px;
+    }
+    .slide-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      padding: 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .slide-header h1 { font-size: 1.4rem; font-weight: 600; }
+    .slide-indicator { font-size: 0.9rem; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; }
+    .slide-body {
+      flex: 1;
+      padding: 36px;
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .slide-body.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2 { color: var(--primary); margin-bottom: 20px; font-size: 1.5rem; }
+    h3 { color: var(--primary-light); margin: 16px 0 8px; font-size: 1.1rem; }
+    p, li { line-height: 1.6; font-size: 1rem; color: #4a5568; }
+    ul { margin-left: 24px; margin-bottom: 16px; }
+    li { margin-bottom: 6px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 16px; }
+    .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; }
+    .metric-badge {
+      display: inline-block;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    .badge-success { color: var(--success); }
+    .badge-danger { color: var(--danger); }
+    table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+    th, td { border: 1px solid #cbd5e1; padding: 10px 14px; text-align: left; font-size: 0.95rem; }
+    th { background: #f1f5f9; color: var(--primary); font-weight: 600; }
+    .center { text-align: center; }
+    .deck-footer {
+      border-top: 1px solid #e2e8f0;
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fafafa;
+    }
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn:hover:not(:disabled) { background: var(--primary-light); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="deck-container">
+    <div class="slide-header">
+      <h1>Conciliador de Facturas y Retenciones</h1>
+      <span class="slide-indicator" id="indicator">Diapositiva 1 de 5</span>
+    </div>
+
+    <!-- Diapositiva 1 -->
+    <div class="slide-body active" id="slide-1">
+      <h2>1. Problema y Objetivo de Negocio</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Situación Actual</h3>
+          <ul>
+            <li>Cruce manual mensual entre <strong>facturas.csv</strong> y <strong>contabilidad.csv</strong> por parte de analistas.</li>
+            <li>Consumo excesivo de tiempo operativo.</li>
+            <li>Riesgo constante de errores de redondeo y tarifas fiscales erradas.</li>
+            <li>Falta de trazabilidad formal y reprocesos en cierres contables.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Objetivo del Prototipo</h3>
+          <ul>
+            <li>Automatizar la ingesta y cruce de datos en una aplicación web interactiva.</li>
+            <li>Aplicar validaciones fiscales y de correspondencia contable con rigor matemático.</li>
+            <li>Generar un resumen ejecutivo y un detalle clasificado con causas explícitas.</li>
+            <li>Garantizar una solución 100% reproducible y auditable.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Diapositiva 2 -->
+    <div class="slide-body" id="slide-2">
+      <h2>2. Solución Propuesta</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Frontend (Angular 17)</h3>
+          <ul>
+            <li>Interfaz web moderna y responsiva construida con componentes standalone.</li>
+            <li>Carga intuitiva con validación previa de archivos CSV.</li>
+            <li>Tarjetas de métricas (Total, Correctas, Inconsistencias).</li>
+            <li>Tabla interactiva con filtro por estado y resaltado visual de divergencias.</li>
+            <li>Formateo monetario en pesos colombianos (COP).</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Backend (Python FastAPI)</h3>
+          <ul>
+            <li>API REST asíncrona de alto rendimiento.</li>
+            <li>Procesamiento estructurado con Pandas y esquemas Pydantic.</li>
+            <li><strong>Aritmética monetaria exacta con <code>Decimal</code> (ROUND_HALF_UP)</strong> para evitar desbordamientos de coma flotante.</li>
+            <li>Arquitectura limpia separada en capas: API, Schemas, Services y Core.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Diapositiva 3 -->
+    <div class="slide-body" id="slide-3">
+      <h2>3. Flujo de Conciliación y Reglas de Negocio</h2>
+      <p>El proceso automatizado ejecuta una secuencia estricta de validaciones:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Regla de Negocio</th>
+            <th>Fórmula / Criterio</th>
+            <th>Impacto y Trazabilidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>IVA Esperado</strong></td>
+            <td><code>Base Gravable × Tarifa IVA</code></td>
+            <td>Se detecta cualquier variación respecto al IVA reportado en el CSV.</td>
+          </tr>
+          <tr>
+            <td><strong>Total Esperado</strong></td>
+            <td><code>Base + IVA esperado − Retención</code></td>
+            <td>Usa el <em>IVA esperado</em> para evitar arrastre de errores tributarios.</td>
+          </tr>
+          <tr>
+            <td><strong>Detección de Duplicados</strong></td>
+            <td>Aparición > 1 de <code>id_factura</code></td>
+            <td>Visibiliza todas las repeticiones sin exclusión silenciosa.</td>
+          </tr>
+          <tr>
+            <td><strong>Registro Contable</strong></td>
+            <td>Cruce contra <code>contabilidad.csv</code></td>
+            <td>Identifica facturas sin asiento contable correspondiente.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Diapositiva 4 -->
+    <div class="slide-body" id="slide-4">
+      <h2>4. Resultados del Prototipo en Datos de Prueba</h2>
+      <div class="grid-2" style="margin-bottom: 16px;">
+        <div class="card center">
+          <div class="metric-badge">50</div>
+          <p><strong>Total Facturas Evaluadas</strong></p>
+        </div>
+        <div class="card center">
+          <div class="metric-badge badge-success">35 (70%)</div>
+          <p><strong>Facturas Correctas</strong></p>
+        </div>
+        <div class="card center" style="grid-column: span 2;">
+          <div class="metric-badge badge-danger">15 (30%)</div>
+          <p><strong>Facturas con Inconsistencias Identificadas</strong></p>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Causa de Inconsistencia</th>
+            <th>Casos</th>
+            <th>Ejemplos Detectados</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Diferencia en IVA</td><td class="center">2</td><td>FAC-0006 ($215.000 vs $190.000 esperado), FAC-0018</td></tr>
+          <tr><td>Diferencia en Total</td><td class="center">3</td><td>FAC-0009, FAC-0023, FAC-0036</td></tr>
+          <tr><td>Factura Duplicada</td><td class="center">4</td><td>FAC-0004 (2 filas), FAC-0015 (2 filas)</td></tr>
+          <tr><td>Sin Registro Contable</td><td class="center">4</td><td>FAC-0007, FAC-0021, FAC-0034, FAC-0042</td></tr>
+          <tr><td>Campos Obligatorios Vacíos</td><td class="center">3</td><td>FAC-0013 (sin NIT), FAC-0029 (sin concepto), FAC-0042 (sin fecha)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Diapositiva 5 -->
+    <div class="slide-body" id="slide-5">
+      <h2>5. Beneficios, Conclusiones y Próximos Pasos</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Impacto y Beneficios</h3>
+          <ul>
+            <li><strong>Eficiencia Extrema:</strong> Conciliación completa en <strong>menos de 1 segundo</strong> frente a horas de revisión manual.</li>
+            <li><strong>Cero Ambigüedad:</strong> Trazabilidad granular de las causas que impiden la contabilización.</li>
+            <li><strong>Precisión Financiera:</strong> Eliminación de riesgos de cálculo gracias al uso de tipos <code>Decimal</code>.</li>
+            <li><strong>Alta Confiabilidad:</strong> 24 pruebas unitarias y de integración automatizadas.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Ruta de Evolución</h3>
+          <ul>
+            <li><strong>Exportación:</strong> Descarga de informes en Excel y PDF con firmas de auditoría.</li>
+            <li><strong>Conciliación de Cuentas:</strong> Validación de centros de costo y cuentas de retención en la fuente (e.g., 2365).</li>
+            <li><strong>Histórico y Roles:</strong> Persistencia en base de datos relacional y perfiles de aprobación contable.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="deck-footer">
+      <button class="btn" id="prevBtn" onclick="cambiarSlide(-1)" disabled>Anterior</button>
+      <span style="font-size:0.9rem; color:#718096;">Prueba Técnica – Analista III</span>
+      <button class="btn" id="nextBtn" onclick="cambiarSlide(1)">Siguiente</button>
+    </div>
+  </div>
+
+  <script>
+    let slideActual = 1;
+    const totalSlides = 5;
+
+    function cambiarSlide(direccion) {
+      const nuevo = slideActual + direccion;
+      if (nuevo < 1 || nuevo > totalSlides) return;
+
+      document.getElementById(`slide-${slideActual}`).classList.remove('active');
+      slideActual = nuevo;
+      document.getElementById(`slide-${slideActual}`).classList.add('active');
+
+      document.getElementById('indicator').textContent = `Diapositiva ${slideActual} de ${totalSlides}`;
+      document.getElementById('prevBtn').disabled = (slideActual === 1);
+      document.getElementById('nextBtn').disabled = (slideActual === totalSlides);
+    }
+  </script>
+</body>
+</html>

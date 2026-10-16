@@ -1,0 +1,22 @@
+<section class="summary-section">
+  <h2>Resumen de conciliación</h2>
+  <div class="summary-grid">
+    <div class="summary-card total">
+      <div class="summary-label">Total facturas</div>
+      <div class="summary-number">{{ resumen.total_facturas }}</div>
+      <div class="summary-percent">Registros analizados</div>
+    </div>
+    <div class="summary-card correctas">
+      <div class="summary-label">Correctas</div>
+      <div class="summary-number">{{ resumen.correctas }}</div>
+      <div class="summary-percent">{{ porcentaje(resumen.correctas) }} del total</div>
+      <div class="barra" aria-hidden="true"><span [style.width]="porcentaje(resumen.correctas)"></span></div>
+    </div>
+    <div class="summary-card inconsistencias">
+      <div class="summary-label">Con inconsistencias</div>
+      <div class="summary-number">{{ resumen.con_inconsistencia }}</div>
+      <div class="summary-percent">{{ porcentaje(resumen.con_inconsistencia) }} del total</div>
+      <div class="barra" aria-hidden="true"><span [style.width]="porcentaje(resumen.con_inconsistencia)"></span></div>
+    </div>
+  </div>
+</section>
