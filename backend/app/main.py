@@ -1,4 +1,10 @@
-"""Punto de entrada principal de la aplicación FastAPI."""
+import sys
+from pathlib import Path
+
+# Garantizar que el directorio backend esté en sys.path al ejecutar desde la raíz del proyecto
+DIRECTORIO_BACKEND = str(Path(__file__).resolve().parent.parent)
+if DIRECTORIO_BACKEND not in sys.path:
+    sys.path.insert(0, DIRECTORIO_BACKEND)
 
 import time
 from fastapi import FastAPI, HTTPException, Request, status
