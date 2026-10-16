@@ -10,9 +10,9 @@ from app.schemas.conciliacion import (
     RespuestaConciliacion,
 )
 from app.services.validaciones import (
-    normalize_id,
-    validate_required_field,
-    validate_numeric_field,
+    normalizar_id,
+    validar_campo_requerido,
+    validar_campo_numerico,
 )
 from app.services.reglas import (
     ContextoFactura,
@@ -51,12 +51,12 @@ def _extraer_contexto_fila(
     id_factura = str(fila.get("id_factura", "")).strip()
 
     # Conversión de base gravable
-    tiene_base_vacia = not validate_required_field(fila.get("base_gravable"))
+    tiene_base_vacia = not validar_campo_requerido(fila.get("base_gravable"))
     if tiene_base_vacia:
         base_gravable = Decimal("0.00")
     else:
         try:
-            base_gravable = validate_numeric_field(fila.get("base_gravable"), "base_gravable").quantize(
+            base_gravable = validar_campo_numerico(fila.get("base_gravable"), "base_gravable").quantize(
                 DOS_DECIMALES, rounding=ROUND_HALF_UP
             )
         except (ValueError, InvalidOperation):
@@ -65,13 +65,13 @@ def _extraer_contexto_fila(
 
     # Conversión de tarifa IVA
     try:
-        tarifa_iva = validate_numeric_field(fila.get("tarifa_iva", "0"), "tarifa_iva")
+        tarifa_iva = validar_campo_numerico(fila.get("tarifa_iva", "0"), "tarifa_iva")
     except (ValueError, InvalidOperation):
         tarifa_iva = Decimal("0.0")
 
     # Conversión de valor IVA reportado
     try:
-        valor_iva = validate_numeric_field(fila.get("valor_iva", "0"), "valor_iva").quantize(
+        valor_iva = validar_campo_numerico(fila.get("valor_iva", "0"), "valor_iva").quantize(
             DOS_DECIMALES, rounding=ROUND_HALF_UP
         )
     except (ValueError, InvalidOperation):
@@ -79,13 +79,13 @@ def _extraer_contexto_fila(
 
     # Conversión de tarifa retención
     try:
-        tarifa_retencion = validate_numeric_field(fila.get("tarifa_retencion", "0"), "tarifa_retencion")
+        tarifa_retencion = validar_campo_numerico(fila.get("tarifa_retencion", "0"), "tarifa_retencion")
     except (ValueError, InvalidOperation):
         tarifa_retencion = Decimal("0.0")
 
     # Conversión de valor retención reportado
     try:
-        valor_retencion = validate_numeric_field(fila.get("valor_retencion", "0"), "valor_retencion").quantize(
+        valor_retencion = validar_campo_numerico(fila.get("valor_retencion", "0"), "valor_retencion").quantize(
             DOS_DECIMALES, rounding=ROUND_HALF_UP
         )
     except (ValueError, InvalidOperation):
@@ -93,7 +93,7 @@ def _extraer_contexto_fila(
 
     # Conversión de total factura reportado
     try:
-        total_factura = validate_numeric_field(fila.get("total_factura", "0"), "total_factura").quantize(
+        total_factura = validar_campo_numerico(fila.get("total_factura", "0"), "total_factura").quantize(
             DOS_DECIMALES, rounding=ROUND_HALF_UP
         )
     except (ValueError, InvalidOperation):
@@ -151,12 +151,12 @@ def procesar_conciliacion(
 
     # Normalización de identificadores
     if "id_factura" in df_f.columns:
-        df_f["id_factura"] = df_f["id_factura"].apply(normalize_id)
+        df_f["id_factura"] = df_f["id_factura"].apply(normalizar_id)
     else:
         df_f["id_factura"] = ""
 
     if "id_factura" in df_c.columns:
-        df_c["id_factura"] = df_c["id_factura"].apply(normalize_id)
+        df_c["id_factura"] = df_c["id_factura"].apply(normalizar_id)
     else:
         df_c["id_factura"] = ""
 
@@ -172,7 +172,7 @@ def procesar_conciliacion(
     valores_contabilidad: Dict[str, List[Decimal]] = {}
 
     for _, fila_c in df_c.iterrows():
-        ident_c = normalize_id(fila_c.get("id_factura"))
+        ident_c = normalizar_id(fila_c.get("id_factura"))
         if not ident_c:
             continue
 
@@ -183,7 +183,7 @@ def procesar_conciliacion(
             estados_contabilidad[ident_c].add(estado_texto)
 
         try:
-            val_deb = validate_numeric_field(fila_c.get("valor_debito", "0"), "valor_debito").quantize(
+            val_deb = validar_campo_numerico(fila_c.get("valor_debito", "0"), "valor_debito").quantize(
                 DOS_DECIMALES, rounding=ROUND_HALF_UP
             )
             if ident_c not in valores_contabilidad:
@@ -200,7 +200,7 @@ def procesar_conciliacion(
     resultados_facturas: List[ResultadoFactura] = []
 
     for _, fila in df_f.iterrows():
-        id_actual = normalize_id(fila.get("id_factura"))
+        id_actual = normalizar_id(fila.get("id_factura"))
         estados_asociados = estados_contabilidad.get(id_actual, set())
         valores_asociados = valores_contabilidad.get(id_actual, [])
 

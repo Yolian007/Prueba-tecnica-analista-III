@@ -3,7 +3,7 @@
 from typing import List
 
 from app.services.reglas.base import ContextoFactura, ReglaConciliacion
-from app.services.validaciones import validate_required_field
+from app.services.validaciones import validar_campo_requerido
 
 
 class ReglaIdentificadorObligatorio(ReglaConciliacion):
@@ -101,6 +101,6 @@ class ReglaCamposObligatoriosAdicionales(ReglaConciliacion):
     def evaluar(self, contexto: ContextoFactura) -> List[str]:
         inconsistencias: List[str] = []
         for campo in self.CAMPOS:
-            if not validate_required_field(contexto.fila_cruda.get(campo)):
+            if not validar_campo_requerido(contexto.fila_cruda.get(campo)):
                 inconsistencias.append(f"Campo obligatorio vacío: {campo}")
         return inconsistencias
